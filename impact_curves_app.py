@@ -351,6 +351,7 @@ if st.sidebar.button("Update Results", disabled=disable_button):
         with t1c1:
             st.markdown("### SHAP Dependency Plot (Pre-calculated)")
             st.write("Pre-calculated SHAP values filtered to the selected subgroup. Pre-calculated SHAP-values may not be accurate for the filtered distribution.")
+            st.write("**Basic interpretation**: Average expected contribution of the feature to the prediction (both main and interactions) conditional on the feature value, relative to the global average prediction.")
         fig1, err = plot_gam_curve(
             X_filtered[target_feature], 
             global_shap_filtered[:, feature_idx], 
@@ -370,7 +371,7 @@ if st.sidebar.button("Update Results", disabled=disable_button):
         with t2c1:
             st.markdown("### Dynamic SHAP Dependency Plot")
             st.write("SHAP values are recalculated on a random sample of 500 filtered observations.")
-        
+            st.write("**Basic interpretation**: Average expected contribution of the feature to the prediction (both main and interactions) conditional on the feature value, relative to the filtered sample's average prediction.")
         # 1. Create Background Sample (max 500)
         subset_size = min(500, len(X_filtered))
         background_data = X_filtered.sample(n=subset_size, random_state=42)
@@ -400,6 +401,8 @@ if st.sidebar.button("Update Results", disabled=disable_button):
         with t3c1:
             st.markdown("### Rebased SHAP Dependency Plot")
             st.write("Global SHAP values shifted to align with the filtered base value (mean). The baseline difference is distributed evenly across features.")
+            st.write("**Basic interpretation**: Average expected contribution of the feature to the prediction (both main and interactions) conditional on the feature value, relative to the filtered sample's average prediction.")
+            st.write("*Note: Interpretation is only valid if the conditional distribution of the feature is similar between the global and filtered datasets.*")
 
         raw_impact = global_shap_filtered[:, feature_idx]
         rebased_impact = raw_impact - np.mean(raw_impact)
@@ -424,6 +427,8 @@ if st.sidebar.button("Update Results", disabled=disable_button):
         with t4c1:
             st.markdown("### Partial Dependence Plot (PDP)")
             st.write("PDP calculated on the filtered dataset. PDPs can be misleading when features are correlated.")
+            st.write("**Basic interpretation**: The average predicted output of the model when the feature is set to a specific value for every observation, relative to the filtered sample's average prediction.")
+            st.write("*Note: PDP is centered to show relative impact to mean prediction. This is different to how PDP is usually presented.*")
         
         try:
             pd_results = partial_dependence(
@@ -437,7 +442,7 @@ if st.sidebar.button("Update Results", disabled=disable_button):
             pd_y = pd_results['average'][0]
             
             fig4, ax4 = plt.subplots(figsize=(8, 5))
-            ax4.plot(pd_x, pd_y - np.mean(pd_y), color='#3a5e8c', linewidth=3, label="PDP Curve")
+            ax4.plot(pd_x, pd_y - np.mean(y_pred_filtered), color='#3a5e8c', linewidth=3, label="PDP Curve")
             
             ax4.set_xlabel(X_LABEL, fontsize=10, fontweight='bold')
             ax4.set_ylabel(Y_LABEL, fontsize=10, fontweight='bold')
@@ -458,7 +463,7 @@ if st.sidebar.button("Update Results", disabled=disable_button):
         with t5c1:
             st.markdown("### Accumulated Local Effects (standard approach with fixed bins)")
             st.write("Standard ALE with 10 fixed-width bins. As the plot is built up of linear segments, the plot may look rugged, hindering interpratation for non-expert users.")
-        
+            st.write("**Basic interpretation**: Average change in prediction when the feature is varied within small intervals, accumulated over the feature range, relative to the filtered sample's average prediction.")
         try:
             feat_vals = X_filtered[target_feature].values
             
@@ -519,6 +524,7 @@ if st.sidebar.button("Update Results", disabled=disable_button):
         with t6c1:
             st.markdown("### Accumulated Local Effects (Jacobian smoothing & integration)")
             st.write("Smooth curve derived by integrating the partial derivatives (Jacobian) of the model.")
+            st.write("**Basic interpretation**: Average change in prediction when the feature is varied within small intervals, accumulated over the feature range, relative to the filtered sample's average prediction.")
         
         try:            
             # dummy col as data and data effect is expeceted to be 2D array
