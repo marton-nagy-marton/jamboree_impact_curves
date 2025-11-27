@@ -445,7 +445,7 @@ if st.sidebar.button("Update Results", disabled=disable_button):
             ax4.plot(pd_x, pd_y, color='#3a5e8c', linewidth=3, label="PDP Curve")
             
             ax4.set_xlabel(X_LABEL, fontsize=10, fontweight='bold')
-            ax4.set_ylabel(Y_LABEL, fontsize=10, fontweight='bold')
+            ax4.set_ylabel('Price ($k)', fontsize=10, fontweight='bold')
             ax4.set_title("Partial Dependence Plot", fontsize=12)
             ax4.grid(True, alpha=0.2, linestyle='--')
             ax4.spines['top'].set_visible(False)
