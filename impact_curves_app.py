@@ -427,8 +427,7 @@ if st.sidebar.button("Update Results", disabled=disable_button):
         with t4c1:
             st.markdown("### Partial Dependence Plot (PDP)")
             st.write("PDP calculated on the filtered dataset. PDPs can be misleading when features are correlated.")
-            st.write("**Basic interpretation**: The average predicted output of the model when the feature is set to a specific value for every observation, relative to the filtered sample's average prediction.")
-            st.write("*Note: PDP is centered to show relative impact to mean prediction. This is different to how PDP is usually presented.*")
+            st.write("**Basic interpretation**: The average predicted output of the model when the feature is set to a specific value for every observation")
         
         try:
             pd_results = partial_dependence(
@@ -442,7 +441,8 @@ if st.sidebar.button("Update Results", disabled=disable_button):
             pd_y = pd_results['average'][0]
             
             fig4, ax4 = plt.subplots(figsize=(8, 5))
-            ax4.plot(pd_x, pd_y - np.mean(y_pred_filtered), color='#3a5e8c', linewidth=3, label="PDP Curve")
+
+            ax4.plot(pd_x, pd_y, color='#3a5e8c', linewidth=3, label="PDP Curve")
             
             ax4.set_xlabel(X_LABEL, fontsize=10, fontweight='bold')
             ax4.set_ylabel(Y_LABEL, fontsize=10, fontweight='bold')
